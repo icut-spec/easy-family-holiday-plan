@@ -2221,6 +2221,34 @@ body {
   gap: 1.5rem;
 }
 
+.budget-limit-section {
+  margin-bottom: 1rem;
+}
+.budget-limit-form {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+}
+.budget-limit-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--color-text);
+}
+.budget-limit-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.budget-limit-row .budget-amount-wrap {
+  flex: 1;
+  min-width: 120px;
+  max-width: 200px;
+}
+
 .budget-summary {
   background: #fff;
   border: 1px solid var(--color-border);

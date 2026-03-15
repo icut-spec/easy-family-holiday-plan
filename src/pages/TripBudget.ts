@@ -26,6 +26,29 @@ function renderBudget(el: HTMLElement, tripRecord: TripRecord): void {
   el.innerHTML = `
     <div class="budget-page">
 
+      <!-- Budget limit editor -->
+      <div class="budget-limit-section">
+        <form class="budget-limit-form" id="budget-limit-form" novalidate>
+          <label class="budget-limit-label" for="budget-limit-input">Trip budget limit (€)</label>
+          <div class="budget-limit-row">
+            <div class="budget-amount-wrap">
+              <span class="budget-currency">€</span>
+              <input
+                class="form-input budget-amount-input"
+                type="number"
+                id="budget-limit-input"
+                placeholder="e.g. 2000"
+                min="0"
+                step="1"
+                value="${budgetLimit > 0 ? budgetLimit : ''}"
+              />
+            </div>
+            <button type="submit" class="btn btn--primary btn--sm">Save</button>
+            ${budgetLimit > 0 ? `<button type="button" class="btn btn--ghost btn--sm" id="budget-limit-clear">Clear</button>` : ''}
+          </div>
+        </form>
+      </div>
+
       <!-- Summary bar -->
       <div class="budget-summary ${overBudget ? 'budget-summary--over' : ''}">
         <div class="budget-summary-row">
@@ -106,6 +129,22 @@ function renderBudget(el: HTMLElement, tripRecord: TripRecord): void {
 }
 
 function bindBudgetEvents(el: HTMLElement, tripRecord: TripRecord): void {
+  // Budget limit form
+  el.querySelector<HTMLFormElement>('#budget-limit-form')?.addEventListener('submit', (e) => {
+    e.preventDefault()
+    const val = el.querySelector<HTMLInputElement>('#budget-limit-input')?.value ?? ''
+    const limit = val ? parseFloat(val) : 0
+    const fresh = getTripRecord(tripRecord)
+    saveTripRecord({ ...fresh, trip: { ...fresh.trip, budget: limit } })
+    renderBudget(el, fresh)
+  })
+
+  el.querySelector('#budget-limit-clear')?.addEventListener('click', () => {
+    const fresh = getTripRecord(tripRecord)
+    saveTripRecord({ ...fresh, trip: { ...fresh.trip, budget: 0 } })
+    renderBudget(el, fresh)
+  })
+
   // Add expense
   el.querySelector<HTMLFormElement>('#budget-add-form')?.addEventListener('submit', (e) => {
     e.preventDefault()
