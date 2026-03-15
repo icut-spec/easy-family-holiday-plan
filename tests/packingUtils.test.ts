@@ -63,6 +63,9 @@ describe('mergePacking', () => {
     expect(labels).toContain('Passports / ID')
     expect(labels).toContain('Phone charger')
     expect(labels).toContain('First aid kit')
+    // Family category always included
+    expect(labels).toContain('Clothes')
+    expect(labels).toContain('Phone chargers (all devices)')
   })
 
   it('includes beach items when holidayType is beach', () => {
@@ -98,6 +101,7 @@ describe('mergePacking', () => {
     const labels = result.map(i => i.label)
     expect(labels).toContain('Pet food')
     expect(labels).toContain('Leash')
+    expect(labels).toContain('Pet toys')
   })
 
   it('preserves checked state of existing items', () => {

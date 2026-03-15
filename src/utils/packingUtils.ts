@@ -18,6 +18,10 @@ export const SEED_ITEMS: SeedItem[] = [
   { label: 'Snacks', category: 'Essentials' },
   { label: 'Medications', category: 'Essentials' },
   { label: 'Toiletries', category: 'Clothing' },
+  // Family (always present)
+  { label: 'Clothes', category: 'Family' },
+  { label: 'Family passports / ID', category: 'Family' },
+  { label: 'Phone chargers (all devices)', category: 'Family' },
   // Kids
   { label: 'Sunscreen (kids)', category: 'Kids', requiredFor: ['kids'] },
   { label: 'Extra clothes (kids)', category: 'Kids', requiredFor: ['kids'] },
@@ -26,6 +30,7 @@ export const SEED_ITEMS: SeedItem[] = [
   // Pets
   { label: 'Pet food', category: 'Pets', requiredFor: ['pets'] },
   { label: 'Leash', category: 'Pets', requiredFor: ['pets'] },
+  { label: 'Pet toys', category: 'Pets', requiredFor: ['pets'] },
   { label: 'Pet carrier', category: 'Pets', requiredFor: ['pets'] },
   { label: 'Vet records', category: 'Pets', requiredFor: ['pets'] },
   // Beach
@@ -51,7 +56,7 @@ export const SEED_ITEMS: SeedItem[] = [
 ]
 
 // Stable category ordering
-export const CATEGORY_ORDER = ['Documents', 'Essentials', 'Clothing', 'Kids', 'Pets', 'Activities', 'Custom']
+export const CATEGORY_ORDER = ['Documents', 'Family', 'Essentials', 'Clothing', 'Kids', 'Pets', 'Activities', 'Custom']
 
 // ── Pure helpers ───────────────────────────────────────────────────────────
 
