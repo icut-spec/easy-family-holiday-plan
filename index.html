@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Easy Family Holiday Plan</title>
+    <link rel="stylesheet" href="/src/styles/main.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>Easy Family Holiday Plan</h1>
+    </header>
+
+    <nav class="tab-bar">
+      <button class="tab-btn active" data-tab="trip">Trip Setup</button>
+      <button class="tab-btn" data-tab="family">Family</button>
+      <button class="tab-btn" data-tab="activities">Activities</button>
+      <button class="tab-btn" data-tab="packing">Packing List</button>
+    </nav>
+
+    <main class="app-main">
+      <section id="tab-trip" class="tab-section"></section>
+      <section id="tab-family" class="tab-section hidden"></section>
+      <section id="tab-activities" class="tab-section hidden"></section>
+      <section id="tab-packing" class="tab-section hidden"></section>
+    </main>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
