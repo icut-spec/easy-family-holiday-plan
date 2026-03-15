@@ -136,6 +136,150 @@ body {
   }
 }
 
+/* ── Trip Setup ── */
+.trip-setup {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.form-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.form-input {
+  padding: 0.55rem 0.75rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+  color: var(--color-text);
+  background-color: #fff;
+  transition: border-color 0.15s;
+  width: 100%;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 117, 202, 0.12);
+}
+
+/* ── Duration Badge ── */
+.duration-badge {
+  display: inline-block;
+  background-color: #e8f0fe;
+  color: var(--color-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  margin-top: -0.5rem;
+}
+
+/* ── Holiday Type ── */
+.holiday-type-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.holiday-type-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 1rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: 999px;
+  background-color: #fff;
+  color: var(--color-tab-inactive-text);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.holiday-type-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background-color: #e8f0fe;
+}
+
+.holiday-type-btn.active {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+.holiday-type-emoji {
+  font-size: 1rem;
+}
+
+/* ── Google Maps Link ── */
+.maps-link-container {
+  margin-top: -0.25rem;
+}
+
+.maps-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--color-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 0.4rem 0.85rem;
+  border: 1.5px solid var(--color-primary);
+  border-radius: 999px;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.maps-link::before {
+  content: '📍';
+  font-size: 0.9rem;
+}
+
+.maps-link:hover {
+  background-color: var(--color-primary);
+  color: #fff;
+}
+
+/* ── Utility ── */
+.hidden {
+  display: none !important;
+}
+
 /* ── Mobile ── */
 @media (max-width: 480px) {
   .app-header h1 {
@@ -149,5 +293,14 @@ body {
 
   .app-main {
     padding: 1rem 0.75rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .holiday-type-btn {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.75rem;
   }
 }
