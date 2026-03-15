@@ -38,15 +38,75 @@ body {
 .app-header {
   background-color: var(--color-primary);
   color: #ffffff;
-  padding: 1rem 1.5rem;
-  text-align: center;
+  padding: 0.75rem 1.25rem;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
+.app-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
 .app-header h1 {
-  font-size: 1.4rem;
+  font-size: 1.25rem;
   font-weight: 700;
   letter-spacing: 0.01em;
+}
+
+/* US-6.4 Reset button */
+.reset-btn {
+  padding: 0.35rem 0.9rem;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+
+.reset-btn:hover {
+  background: rgba(255, 255, 255, 0.28);
+  border-color: #fff;
+}
+
+/* US-6.3 Trip summary bar */
+.trip-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.6rem 1rem;
+  background-color: #e8f0fe;
+  border-bottom: 1px solid #c5d8f8;
+  justify-content: center;
+}
+
+.summary-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-primary-dark);
+  background-color: #fff;
+  border: 1px solid #c5d8f8;
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
+  white-space: nowrap;
+}
+
+.summary-chip--dest {
+  background-color: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
 }
 
 /* ── Tab Bar ── */
@@ -533,7 +593,12 @@ body {
 /* ── Mobile ── */
 @media (max-width: 480px) {
   .app-header h1 {
-    font-size: 1.15rem;
+    font-size: 1rem;
+  }
+
+  .reset-btn {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.7rem;
   }
 
   .tab-btn {
@@ -552,6 +617,15 @@ body {
   .holiday-type-btn {
     font-size: 0.8rem;
     padding: 0.4rem 0.75rem;
+  }
+
+  .trip-summary {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .summary-chip {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
   }
 }
 

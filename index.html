@@ -8,8 +8,16 @@
   </head>
   <body>
     <header class="app-header">
-      <h1>Easy Family Holiday Plan</h1>
+      <div class="app-header-inner">
+        <h1>Easy Family Holiday Plan</h1>
+        <button class="reset-btn" id="reset-btn" type="button" title="Start a new plan">
+          Start New Plan
+        </button>
+      </div>
     </header>
+
+    <!-- US-6.3 Trip summary bar -->
+    <div class="trip-summary hidden" id="trip-summary" aria-label="Trip summary"></div>
 
     <nav class="tab-bar">
       <button class="tab-btn active" data-tab="trip">Trip Setup</button>
