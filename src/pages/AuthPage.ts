@@ -1,4 +1,6 @@
 import { navigate } from '../router'
+import { signUp, signIn, signInWithGoogle } from '../lib/auth'
+import { isSupabaseConfigured } from '../lib/supabase'
 
 export function mount(el: HTMLElement, mode: 'login' | 'signup' = 'signup'): void {
   el.innerHTML = `
@@ -31,9 +33,10 @@ export function mount(el: HTMLElement, mode: 'login' | 'signup' = 'signup'): voi
             <input class="auth-input" type="password" id="signup-password" name="password" placeholder="At least 8 characters" autocomplete="new-password" />
             <span class="auth-error" id="signup-password-error"></span>
           </div>
-          <button type="submit" class="btn btn--primary btn--full">Create account</button>
+          <span class="auth-error auth-error--form" id="signup-form-error"></span>
+          <button type="submit" class="btn btn--primary btn--full" id="signup-submit">Create account</button>
           <div class="auth-divider"><span>or</span></div>
-          <button type="button" class="btn btn--google btn--full" id="google-signup">
+          <button type="button" class="btn btn--google btn--full" id="google-signup" ${!isSupabaseConfigured ? 'disabled title="Supabase not configured"' : ''}>
             <svg class="google-icon" viewBox="0 0 18 18" aria-hidden="true"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/><path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
             Continue with Google
           </button>
@@ -52,9 +55,10 @@ export function mount(el: HTMLElement, mode: 'login' | 'signup' = 'signup'): voi
             <span class="auth-error" id="login-password-error"></span>
           </div>
           <a href="#" class="auth-forgot">Forgot password?</a>
-          <button type="submit" class="btn btn--primary btn--full">Log in</button>
+          <span class="auth-error auth-error--form" id="login-form-error"></span>
+          <button type="submit" class="btn btn--primary btn--full" id="login-submit">Log in</button>
           <div class="auth-divider"><span>or</span></div>
-          <button type="button" class="btn btn--google btn--full" id="google-login">
+          <button type="button" class="btn btn--google btn--full" id="google-login" ${!isSupabaseConfigured ? 'disabled title="Supabase not configured"' : ''}>
             <svg class="google-icon" viewBox="0 0 18 18" aria-hidden="true"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/><path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
             Continue with Google
           </button>
@@ -65,6 +69,17 @@ export function mount(el: HTMLElement, mode: 'login' | 'signup' = 'signup'): voi
   `
 
   bindEvents(el)
+}
+
+function setLoading(el: HTMLElement, formId: string, loading: boolean): void {
+  const btn = el.querySelector<HTMLButtonElement>(
+    formId === 'form-signup' ? '#signup-submit' : '#login-submit',
+  )
+  if (!btn) return
+  btn.disabled = loading
+  btn.textContent = loading
+    ? formId === 'form-signup' ? 'Creating account…' : 'Logging in…'
+    : formId === 'form-signup' ? 'Create account' : 'Log in'
 }
 
 function bindEvents(el: HTMLElement): void {
@@ -82,24 +97,71 @@ function bindEvents(el: HTMLElement): void {
     navigate('landing')
   })
 
-  // Sign-up form validation (UI-only for now — Epic 7 wires up Supabase)
+  // Sign-up form
   const signupForm = el.querySelector<HTMLFormElement>('#form-signup')
-  signupForm?.addEventListener('submit', (e) => {
+  signupForm?.addEventListener('submit', async (e) => {
     e.preventDefault()
     if (!validateSignup(el)) return
-    // Stub: navigate to trips on success (Epic 7 replaces this)
+
+    const name = (el.querySelector<HTMLInputElement>('#signup-name')?.value ?? '').trim()
+    const email = (el.querySelector<HTMLInputElement>('#signup-email')?.value ?? '').trim()
+    const password = el.querySelector<HTMLInputElement>('#signup-password')?.value ?? ''
+
+    setLoading(el, 'form-signup', true)
+    clearFormError(el, 'signup-form-error')
+
+    const { error } = await signUp(email, password, name)
+
+    setLoading(el, 'form-signup', false)
+
+    if (error) {
+      showFormError(el, 'signup-form-error', error)
+      return
+    }
+
+    // Success — navigate to dashboard
     navigate('trips')
   })
 
-  // Login form validation
+  // Login form
   const loginForm = el.querySelector<HTMLFormElement>('#form-login')
-  loginForm?.addEventListener('submit', (e) => {
+  loginForm?.addEventListener('submit', async (e) => {
     e.preventDefault()
     if (!validateLogin(el)) return
+
+    const email = (el.querySelector<HTMLInputElement>('#login-email')?.value ?? '').trim()
+    const password = el.querySelector<HTMLInputElement>('#login-password')?.value ?? ''
+
+    setLoading(el, 'form-login', true)
+    clearFormError(el, 'login-form-error')
+
+    const { error } = await signIn(email, password)
+
+    setLoading(el, 'form-login', false)
+
+    if (error) {
+      showFormError(el, 'login-form-error', error)
+      return
+    }
+
+    // Success — navigate to dashboard
     navigate('trips')
   })
 
-  // Clear errors on input
+  // Google OAuth buttons
+  el.querySelector('#google-signup')?.addEventListener('click', async () => {
+    clearFormError(el, 'signup-form-error')
+    const { error } = await signInWithGoogle()
+    if (error) showFormError(el, 'signup-form-error', error)
+  })
+
+  el.querySelector('#google-login')?.addEventListener('click', async () => {
+    clearFormError(el, 'login-form-error')
+    const { error } = await signInWithGoogle()
+    if (error) showFormError(el, 'login-form-error', error)
+  })
+
+  // Clear field errors on input
   el.querySelectorAll<HTMLInputElement>('.auth-input').forEach((input) => {
     input.addEventListener('input', () => {
       const errorEl = el.querySelector(`#${input.id}-error`)
@@ -114,6 +176,16 @@ function setError(el: HTMLElement, fieldId: string, msg: string): void {
   const error = el.querySelector<HTMLElement>(`#${fieldId}-error`)
   if (input) input.classList.add('auth-input--error')
   if (error) error.textContent = msg
+}
+
+function showFormError(el: HTMLElement, id: string, msg: string): void {
+  const span = el.querySelector<HTMLElement>(`#${id}`)
+  if (span) span.textContent = msg
+}
+
+function clearFormError(el: HTMLElement, id: string): void {
+  const span = el.querySelector<HTMLElement>(`#${id}`)
+  if (span) span.textContent = ''
 }
 
 function validateSignup(el: HTMLElement): boolean {
