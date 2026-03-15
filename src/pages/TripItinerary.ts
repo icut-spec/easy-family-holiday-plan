@@ -72,7 +72,7 @@ function renderDay(day: ItineraryDay, dayNum: number): string {
       <ul class="itinerary-activities" data-date="${escHtml(day.date)}">
         ${acts.length === 0
           ? `<li class="itinerary-empty">No activities yet. Add your first one.</li>`
-          : acts.map((a) => renderActivity(a, day.date)).join('')}
+          : acts.map((a, idx) => renderActivity(a, day.date, idx === 0, idx === acts.length - 1)).join('')}
       </ul>
 
       <div class="itinerary-add-row">
@@ -86,12 +86,14 @@ function renderDay(day: ItineraryDay, dayNum: number): string {
   `
 }
 
-function renderActivity(activity: ItineraryActivity, date: string): string {
+function renderActivity(activity: ItineraryActivity, date: string, isFirst: boolean, isLast: boolean): string {
   return `
     <li class="itinerary-activity" data-id="${escHtml(activity.id)}" data-date="${escHtml(date)}">
       <span class="itinerary-activity-time">${escHtml(activity.time)}</span>
       <span class="itinerary-activity-title">${escHtml(activity.title)}</span>
       <div class="itinerary-activity-actions">
+        <button class="itinerary-up-btn btn btn--ghost btn--xs" data-id="${escHtml(activity.id)}" data-date="${escHtml(date)}" aria-label="Move up" ${isFirst ? 'disabled' : ''}>↑</button>
+        <button class="itinerary-down-btn btn btn--ghost btn--xs" data-id="${escHtml(activity.id)}" data-date="${escHtml(date)}" aria-label="Move down" ${isLast ? 'disabled' : ''}>↓</button>
         <button class="itinerary-edit-btn btn btn--ghost btn--xs" data-id="${escHtml(activity.id)}" data-date="${escHtml(date)}" aria-label="Edit activity">✏️</button>
         <button class="itinerary-delete-btn btn btn--ghost btn--xs" data-id="${escHtml(activity.id)}" data-date="${escHtml(date)}" aria-label="Delete activity">❌</button>
       </div>
@@ -136,6 +138,58 @@ function bindItineraryEvents(el: HTMLElement, tripRecord: TripRecord): void {
       const days = buildScaffold(fresh).map((d) => {
         if (d.date !== date) return d
         return { ...d, activities: d.activities.filter((a) => a.id !== id) }
+      })
+      const updated = { ...fresh, itinerary: days }
+      saveTripRecord(updated)
+      renderItinerary(el, updated)
+    })
+  })
+
+  // Move activity up
+  el.querySelectorAll<HTMLButtonElement>('.itinerary-up-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (btn.disabled) return
+      const id = btn.dataset.id!
+      const date = btn.dataset.date!
+      const fresh = getTripRecord(tripRecord)
+      const days = buildScaffold(fresh).map((d) => {
+        if (d.date !== date) return d
+        const sorted = d.activities.slice().sort((a, b) => a.time.localeCompare(b.time))
+        const idx = sorted.findIndex((a) => a.id === id)
+        if (idx <= 0) return d
+        const swapped = [...sorted]
+        ;[swapped[idx - 1], swapped[idx]] = [swapped[idx], swapped[idx - 1]]
+        // Swap times so order is preserved on re-sort
+        const tempTime = swapped[idx - 1].time
+        swapped[idx - 1] = { ...swapped[idx - 1], time: swapped[idx].time }
+        swapped[idx] = { ...swapped[idx], time: tempTime }
+        return { ...d, activities: swapped }
+      })
+      const updated = { ...fresh, itinerary: days }
+      saveTripRecord(updated)
+      renderItinerary(el, updated)
+    })
+  })
+
+  // Move activity down
+  el.querySelectorAll<HTMLButtonElement>('.itinerary-down-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (btn.disabled) return
+      const id = btn.dataset.id!
+      const date = btn.dataset.date!
+      const fresh = getTripRecord(tripRecord)
+      const days = buildScaffold(fresh).map((d) => {
+        if (d.date !== date) return d
+        const sorted = d.activities.slice().sort((a, b) => a.time.localeCompare(b.time))
+        const idx = sorted.findIndex((a) => a.id === id)
+        if (idx < 0 || idx >= sorted.length - 1) return d
+        const swapped = [...sorted]
+        ;[swapped[idx], swapped[idx + 1]] = [swapped[idx + 1], swapped[idx]]
+        // Swap times so order is preserved on re-sort
+        const tempTime = swapped[idx].time
+        swapped[idx] = { ...swapped[idx], time: swapped[idx + 1].time }
+        swapped[idx + 1] = { ...swapped[idx + 1], time: tempTime }
+        return { ...d, activities: swapped }
       })
       const updated = { ...fresh, itinerary: days }
       saveTripRecord(updated)
