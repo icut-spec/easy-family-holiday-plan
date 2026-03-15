@@ -15,18 +15,28 @@ const defaultState: AppState = {
   trip: defaultTrip,
   members: [],
   packingItems: [],
+  trips: [],
+  currentTripId: null,
 }
 
 let _state: AppState = { ...defaultState }
 
 export function loadState(): AppState {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    const raw = (globalThis.localStorage ?? localStorage).getItem(STORAGE_KEY)
     if (!raw) {
       _state = { ...defaultState, trip: { ...defaultTrip } }
       return _state
     }
-    _state = JSON.parse(raw) as AppState
+    const parsed = JSON.parse(raw) as Partial<AppState>
+    // Migrate old state that may not have trips/currentTripId
+    _state = {
+      ...defaultState,
+      ...parsed,
+      trip: { ...defaultTrip, ...(parsed.trip ?? {}) },
+      trips: parsed.trips ?? [],
+      currentTripId: parsed.currentTripId ?? null,
+    }
     return _state
   } catch {
     _state = { ...defaultState, trip: { ...defaultTrip } }
@@ -36,7 +46,7 @@ export function loadState(): AppState {
 
 export function saveState(state: AppState): void {
   _state = state
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+  ;(globalThis.localStorage ?? localStorage).setItem(STORAGE_KEY, JSON.stringify(state))
 }
 
 export function getState(): AppState {

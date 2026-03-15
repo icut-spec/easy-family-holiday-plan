@@ -7,32 +7,7 @@
     <link rel="stylesheet" href="/src/styles/main.css" />
   </head>
   <body>
-    <header class="app-header">
-      <div class="app-header-inner">
-        <h1>Planning a trip with family and pets</h1>
-        <button class="reset-btn" id="reset-btn" type="button" title="Start a new plan">
-          Start New Plan
-        </button>
-      </div>
-    </header>
-
-    <!-- US-6.3 Trip summary bar -->
-    <div class="trip-summary hidden" id="trip-summary" aria-label="Trip summary"></div>
-
-    <nav class="tab-bar">
-      <button class="tab-btn active" data-tab="trip">Trip Setup</button>
-      <button class="tab-btn" data-tab="family">Family</button>
-      <button class="tab-btn" data-tab="activities">Activities</button>
-      <button class="tab-btn" data-tab="packing">Packing List</button>
-    </nav>
-
-    <main class="app-main">
-      <section id="tab-trip" class="tab-section"></section>
-      <section id="tab-family" class="tab-section hidden"></section>
-      <section id="tab-activities" class="tab-section hidden"></section>
-      <section id="tab-packing" class="tab-section hidden"></section>
-    </main>
-
+    <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
