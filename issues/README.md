@@ -1,4 +1,4 @@
-# Issues — Easy Family Holiday Plan
+# Issues — Planning a trip with family and pets
 
 This folder contains the full documentation for all epics and user stories.
 
@@ -14,8 +14,11 @@ This folder contains the full documentation for all epics and user stories.
 | [epic-4-activities.md](./epic-4-activities.md) | Activities | #15 – #19 |
 | [epic-5-packing-list.md](./epic-5-packing-list.md) | Packing List | #20 – #24 |
 | [epic-6-polish-ux.md](./epic-6-polish-ux.md) | Polish & UX | #25 – #28 |
+| [epic-7-user-accounts.md](./epic-7-user-accounts.md) | User Accounts (MVP) | #29 – #32 |
+| [epic-8-trip-dashboard.md](./epic-8-trip-dashboard.md) | Trip Creation & Dashboard (MVP) | #33 – #36 |
+| [epic-9-map-packing-itinerary.md](./epic-9-map-packing-itinerary.md) | Map, Packing List & Itinerary (MVP) | #37 – #40 |
 
-**Total: 6 epics, 28 user stories**
+**Total: 9 epics, 40 user stories**
 
 ---
 
