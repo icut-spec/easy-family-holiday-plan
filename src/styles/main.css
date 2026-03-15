@@ -1612,7 +1612,8 @@ body {
 
 .trip-card-dest,
 .trip-card-dates,
-.trip-card-travellers {
+.trip-card-travellers,
+.trip-card-type {
   font-size: 0.875rem;
   color: var(--color-text-muted);
 }

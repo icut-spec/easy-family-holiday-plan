@@ -158,6 +158,8 @@ function tripCard(t: TripRecord): string {
     ? `${formatDate(t.trip.startDate)} – ${formatDate(t.trip.endDate)}`
     : 'Dates TBD'
 
+  const htLabel = holidayTypeLabel(t.trip.holidayType)
+
   return `
     <article class="trip-card" data-trip-id="${escHtml(t.id)}">
       <div class="trip-card-body">
@@ -165,6 +167,7 @@ function tripCard(t: TripRecord): string {
         <p class="trip-card-dest">📍 ${escHtml(t.trip.destination || 'No destination')}</p>
         <p class="trip-card-dates">📅 ${escHtml(dateRange)}</p>
         <p class="trip-card-travellers">👨‍👩‍👧 ${escHtml(travellers)}</p>
+        <p class="trip-card-type">${htLabel}</p>
       </div>
       <div class="trip-card-footer">
         <button class="btn btn--primary btn--sm trip-open-btn" data-trip-id="${escHtml(t.id)}">Open →</button>
