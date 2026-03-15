@@ -47,7 +47,7 @@ function render(el: HTMLElement): void {
 
     <!-- Create trip modal -->
     <div class="modal-backdrop hidden" id="create-trip-modal">
-      <div class="modal">
+      <div class="modal modal--wide">
         <div class="modal-header">
           <h2>New Trip</h2>
           <button class="modal-close" id="modal-close" aria-label="Close">✕</button>
@@ -71,6 +71,67 @@ function render(el: HTMLElement): void {
               <input class="form-input" type="date" id="new-trip-end" />
             </div>
           </div>
+
+          <div class="form-group">
+            <label class="form-label">Holiday type</label>
+            <div class="holiday-type-group" id="holiday-type-group">
+              ${(['beach','mountains','city','camping','other'] as const).map((ht) => `
+                <label class="holiday-type-pill ${ht === 'other' ? 'holiday-type-pill--active' : ''}" data-ht="${ht}">
+                  <input type="radio" name="holiday-type" value="${ht}" ${ht === 'other' ? 'checked' : ''} />
+                  ${holidayTypeLabel(ht)}
+                </label>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Travellers</label>
+            <div class="stepper-group">
+              <div class="stepper-row">
+                <span class="stepper-label">🧑 Adults</span>
+                <div class="stepper-controls">
+                  <button type="button" class="stepper-btn" id="adults-dec" aria-label="Decrease adults">−</button>
+                  <span class="stepper-value" id="adults-val">1</span>
+                  <button type="button" class="stepper-btn" id="adults-inc" aria-label="Increase adults">+</button>
+                </div>
+              </div>
+              <div class="stepper-row">
+                <span class="stepper-label">🧒 Children</span>
+                <div class="stepper-controls">
+                  <button type="button" class="stepper-btn" id="children-dec" aria-label="Decrease children">−</button>
+                  <span class="stepper-value" id="children-val">0</span>
+                  <button type="button" class="stepper-btn" id="children-inc" aria-label="Increase children">+</button>
+                </div>
+              </div>
+              <div class="stepper-row">
+                <span class="stepper-label">🐾 Pets</span>
+                <div class="stepper-controls">
+                  <button type="button" class="stepper-btn" id="pets-dec" aria-label="Decrease pets">−</button>
+                  <span class="stepper-value" id="pets-val">0</span>
+                  <button type="button" class="stepper-btn" id="pets-inc" aria-label="Increase pets">+</button>
+                </div>
+              </div>
+              <div class="stepper-row stepper-row--pet-type hidden" id="pet-type-row">
+                <span class="stepper-label">Pet type</span>
+                <select class="form-input stepper-pet-select" id="pet-type-select">
+                  <option value="Dog">Dog</option>
+                  <option value="Cat">Cat</option>
+                  <option value="Rabbit">Rabbit</option>
+                  <option value="Bird">Bird</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="new-trip-budget">Budget (€, optional)</label>
+            <div class="budget-input-wrap">
+              <span class="budget-currency">€</span>
+              <input class="form-input budget-amount-input" type="number" id="new-trip-budget" placeholder="e.g. 2000" min="0" step="1" />
+            </div>
+          </div>
+
           <div class="modal-actions">
             <button type="button" class="btn btn--ghost" id="modal-cancel">Cancel</button>
             <button type="submit" class="btn btn--primary">Create Trip</button>
@@ -122,15 +183,75 @@ function escHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 }
 
+function holidayTypeLabel(ht: string): string {
+  const labels: Record<string, string> = {
+    beach: '🏖️ Beach',
+    mountains: '⛰️ Mountains',
+    city: '🏙️ City',
+    camping: '⛺ Camping',
+    other: '✈️ Other',
+  }
+  return labels[ht] ?? ht
+}
+
 function openModal(el: HTMLElement): void {
   el.querySelector('#create-trip-modal')?.classList.remove('hidden')
   el.querySelector<HTMLInputElement>('#new-trip-title')?.focus()
+  bindModalSteppers(el)
+  bindHolidayTypePills(el)
 }
 
 function closeModal(el: HTMLElement): void {
   el.querySelector('#create-trip-modal')?.classList.add('hidden')
   const form = el.querySelector<HTMLFormElement>('#create-trip-form')
   form?.reset()
+  // Reset stepper display values and pet type row
+  const adultsVal = el.querySelector<HTMLElement>('#adults-val')
+  const childrenVal = el.querySelector<HTMLElement>('#children-val')
+  const petsVal = el.querySelector<HTMLElement>('#pets-val')
+  const petTypeRow = el.querySelector<HTMLElement>('#pet-type-row')
+  if (adultsVal) adultsVal.textContent = '1'
+  if (childrenVal) childrenVal.textContent = '0'
+  if (petsVal) petsVal.textContent = '0'
+  if (petTypeRow) petTypeRow.classList.add('hidden')
+  // Reset active pill
+  el.querySelectorAll('.holiday-type-pill').forEach((p) => p.classList.remove('holiday-type-pill--active'))
+  el.querySelector('.holiday-type-pill[data-ht="other"]')?.classList.add('holiday-type-pill--active')
+}
+
+function makeStepper(el: HTMLElement, decId: string, incId: string, valId: string, min: number, onChange?: (v: number) => void): void {
+  const valEl = el.querySelector<HTMLElement>(`#${valId}`)
+  let value = parseInt(valEl?.textContent ?? '0', 10)
+
+  el.querySelector(`#${decId}`)?.addEventListener('click', () => {
+    if (value <= min) return
+    value--
+    if (valEl) valEl.textContent = String(value)
+    onChange?.(value)
+  })
+  el.querySelector(`#${incId}`)?.addEventListener('click', () => {
+    value++
+    if (valEl) valEl.textContent = String(value)
+    onChange?.(value)
+  })
+}
+
+function bindModalSteppers(el: HTMLElement): void {
+  makeStepper(el, 'adults-dec', 'adults-inc', 'adults-val', 1)
+  makeStepper(el, 'children-dec', 'children-inc', 'children-val', 0)
+  makeStepper(el, 'pets-dec', 'pets-inc', 'pets-val', 0, (v) => {
+    const petTypeRow = el.querySelector<HTMLElement>('#pet-type-row')
+    if (petTypeRow) petTypeRow.classList.toggle('hidden', v === 0)
+  })
+}
+
+function bindHolidayTypePills(el: HTMLElement): void {
+  el.querySelectorAll<HTMLElement>('.holiday-type-pill').forEach((pill) => {
+    pill.addEventListener('click', () => {
+      el.querySelectorAll('.holiday-type-pill').forEach((p) => p.classList.remove('holiday-type-pill--active'))
+      pill.classList.add('holiday-type-pill--active')
+    })
+  })
 }
 
 function bindEvents(el: HTMLElement): void {
@@ -173,6 +294,20 @@ function bindEvents(el: HTMLElement): void {
     const startDate = el.querySelector<HTMLInputElement>('#new-trip-start')?.value ?? ''
     const endDate = el.querySelector<HTMLInputElement>('#new-trip-end')?.value ?? ''
 
+    const adults = parseInt(el.querySelector<HTMLElement>('#adults-val')?.textContent ?? '1', 10)
+    const children = parseInt(el.querySelector<HTMLElement>('#children-val')?.textContent ?? '0', 10)
+    const pets = parseInt(el.querySelector<HTMLElement>('#pets-val')?.textContent ?? '0', 10)
+    const petType = el.querySelector<HTMLSelectElement>('#pet-type-select')?.value ?? 'Dog'
+    const holidayType = (el.querySelector<HTMLInputElement>('input[name="holiday-type"]:checked')?.value ?? 'other') as TripRecord['trip']['holidayType']
+    const budgetStr = el.querySelector<HTMLInputElement>('#new-trip-budget')?.value ?? ''
+    const budget = budgetStr ? parseFloat(budgetStr) : 0
+
+    // Build member list from stepper values
+    const members: TripRecord['members'] = []
+    for (let i = 1; i <= adults; i++) members.push({ id: crypto.randomUUID(), type: 'adult', name: `Adult ${i}` })
+    for (let i = 1; i <= children; i++) members.push({ id: crypto.randomUUID(), type: 'child', name: `Child ${i}` })
+    for (let i = 1; i <= pets; i++) members.push({ id: crypto.randomUUID(), type: 'pet', name: `${petType} ${i}`, petType })
+
     const newTrip: TripRecord = {
       id: crypto.randomUUID(),
       title,
@@ -180,11 +315,11 @@ function bindEvents(el: HTMLElement): void {
         destination: dest,
         startDate,
         endDate,
-        budget: 0,
-        holidayType: 'other',
-        petFriendly: false,
+        budget,
+        holidayType,
+        petFriendly: pets > 0,
       },
-      members: [],
+      members,
       packingItems: [],
       itinerary: [],
       budget: [],
