@@ -1,6 +1,8 @@
 # Epic 9: Map, Packing List & Itinerary
 
 > Pet-friendly map pins via Google Maps API, an enhanced adaptive packing list, and a day-by-day itinerary builder.
+> UI design for these screens is covered in **Epic 10** (US-10.7, US-10.8, US-10.9).
+> Database schema for activities and packing items is covered in **Epic 11** (US-11.3, US-11.4).
 
 ---
 

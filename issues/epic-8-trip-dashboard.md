@@ -1,6 +1,8 @@
 # Epic 8: Trip Creation & Dashboard
 
 > Users create named trips with full family context and are taken to a rich dashboard with itinerary, map, packing list, and budget sections.
+> UI design for all dashboard screens is covered in **Epic 10** (US-10.5, US-10.6, US-10.10).
+> Database schema for trips is covered in **Epic 11** (US-11.2, US-11.5).
 
 ---
 

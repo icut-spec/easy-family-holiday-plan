@@ -17,8 +17,11 @@ This folder contains the full documentation for all epics and user stories.
 | [epic-7-user-accounts.md](./epic-7-user-accounts.md) | User Accounts (MVP) | #29 – #32 |
 | [epic-8-trip-dashboard.md](./epic-8-trip-dashboard.md) | Trip Creation & Dashboard (MVP) | #33 – #36 |
 | [epic-9-map-packing-itinerary.md](./epic-9-map-packing-itinerary.md) | Map, Packing List & Itinerary (MVP) | #37 – #40 |
+| [epic-10-ui-screens.md](./epic-10-ui-screens.md) | UI Screens & Design | #41 – #50 |
+| [epic-11-database.md](./epic-11-database.md) | Database & Backend (Supabase) | #51 – #56 |
+| [epic-12-advanced-features.md](./epic-12-advanced-features.md) | Advanced Features (Version 2) | #57 – #61 |
 
-**Total: 9 epics, 40 user stories**
+**Total: 12 epics, 61 user stories**
 
 ---
 
