@@ -4,6 +4,9 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export interface Database {
+  __InternalSupabase: {
+    PostgrestVersion: '12'
+  }
   public: {
     Tables: {
       users: {
@@ -161,8 +164,8 @@ export interface Database {
         }
       }
     }
-    Views: Record<string, never>
-    Functions: Record<string, never>
-    Enums: Record<string, never>
+    Views: Record<string, unknown>
+    Functions: Record<string, unknown>
+    Enums: Record<string, unknown>
   }
 }

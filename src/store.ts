@@ -21,6 +21,14 @@ const defaultState: AppState = {
 
 let _state: AppState = { ...defaultState }
 
+type StateChangeCallback = (state: AppState) => void
+const _stateListeners: StateChangeCallback[] = []
+
+/** Register a callback that fires whenever state is saved. */
+export function onStateChange(cb: StateChangeCallback): void {
+  _stateListeners.push(cb)
+}
+
 export function loadState(): AppState {
   try {
     const raw = (globalThis.localStorage ?? localStorage).getItem(STORAGE_KEY)
@@ -47,6 +55,7 @@ export function loadState(): AppState {
 export function saveState(state: AppState): void {
   _state = state
   ;(globalThis.localStorage ?? localStorage).setItem(STORAGE_KEY, JSON.stringify(state))
+  _stateListeners.forEach((cb) => cb(state))
 }
 
 export function getState(): AppState {
