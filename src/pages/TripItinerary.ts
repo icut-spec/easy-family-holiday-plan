@@ -1,5 +1,6 @@
 import { getState, setState } from '../store'
 import type { TripRecord, ItineraryDay, ItineraryActivity } from '../types'
+import { getFallbackActivities } from '../data/fallbackActivities'
 
 export function mountItinerary(el: HTMLElement, tripRecord: TripRecord): void {
   renderItinerary(el, tripRecord)
@@ -50,18 +51,25 @@ function renderItinerary(el: HTMLElement, tripRecord: TripRecord): void {
 
   el.innerHTML = `
     <div class="itinerary-page">
-      ${days.map((day, i) => renderDay(day, i + 1)).join('')}
+      ${days.map((day, i) => renderDay(day, i + 1, fresh)).join('')}
     </div>
   `
 
   bindItineraryEvents(el, fresh)
 }
 
-function renderDay(day: ItineraryDay, dayNum: number): string {
+function renderDay(day: ItineraryDay, dayNum: number, tripRecord: TripRecord): string {
   const label = new Date(day.date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
   const acts = day.activities
     .slice()
     .sort((a, b) => a.time.localeCompare(b.time))
+
+  // Build activity suggestions from fallback list, pet-friendly first if applicable
+  const suggestions = getFallbackActivities(tripRecord.trip.holidayType, tripRecord.trip.destination)
+  const sorted = tripRecord.trip.petFriendly
+    ? [...suggestions.filter((s) => s.petFriendly), ...suggestions.filter((s) => !s.petFriendly)]
+    : suggestions
+  const datalistId = `suggestions-${escHtml(day.date)}`
 
   return `
     <section class="itinerary-day" data-date="${escHtml(day.date)}">
@@ -75,10 +83,22 @@ function renderDay(day: ItineraryDay, dayNum: number): string {
           : acts.map((a, idx) => renderActivity(a, day.date, idx === 0, idx === acts.length - 1)).join('')}
       </ul>
 
+      <datalist id="${datalistId}">
+        ${sorted.map((s) => `<option value="${escHtml(s.name)}">${escHtml(s.petFriendly ? s.name + ' 🐾' : s.name)}</option>`).join('')}
+      </datalist>
+
       <div class="itinerary-add-row">
         <form class="itinerary-add-form" data-date="${escHtml(day.date)}">
           <input class="form-input itinerary-time-input" type="time" name="time" value="09:00" aria-label="Time" />
-          <input class="form-input itinerary-title-input" type="text" name="title" placeholder="Activity name" aria-label="Activity name" required />
+          <input
+            class="form-input itinerary-title-input"
+            type="text"
+            name="title"
+            placeholder="Activity name"
+            aria-label="Activity name"
+            list="${datalistId}"
+            required
+          />
           <button type="submit" class="btn btn--primary btn--sm">Add</button>
         </form>
       </div>
