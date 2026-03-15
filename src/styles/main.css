@@ -2272,6 +2272,42 @@ body {
   padding-left: 1.75rem !important;
 }
 
+/* ============================================================
+   Sync indicator (US-7.3)
+   ============================================================ */
+
+.sync-indicator {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  transition: opacity 0.3s;
+}
+
+.sync-indicator--saving {
+  background: var(--color-primary-light, #e0e7ff);
+  color: var(--color-primary, #4f46e5);
+}
+
+.sync-indicator--saved {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.sync-indicator--error {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* Form-level auth error (below individual fields) */
+.auth-error--form {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--color-danger, #dc2626);
+  min-height: 1.2em;
+}
+
 @media (max-width: 600px) {
   .budget-add-row {
     grid-template-columns: 1fr 1fr;

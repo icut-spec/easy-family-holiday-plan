@@ -1,5 +1,6 @@
 import { getState, setState } from '../store'
 import { navigate } from '../router'
+import { signOut } from '../lib/auth'
 import type { TripTab } from '../router'
 import type { TripRecord } from '../types'
 import { mountItinerary } from './TripItinerary'
@@ -50,6 +51,9 @@ function renderShell(el: HTMLElement, tripRecord: TripRecord, activeTab: TripTab
             <h1 class="page-header-title">${escHtml(tripRecord.title)}</h1>
             <span class="page-header-sub">📍 ${escHtml(tripRecord.trip.destination || 'No destination')}</span>
           </div>
+          <div class="page-header-actions">
+            <button class="btn btn--ghost btn--sm" id="header-logout">Log out</button>
+          </div>
         </div>
       </header>
 
@@ -89,6 +93,12 @@ function renderShell(el: HTMLElement, tripRecord: TripRecord, activeTab: TripTab
   el.querySelector('#back-to-trips')?.addEventListener('click', (e) => {
     e.preventDefault()
     navigate('trips')
+  })
+
+  // Logout
+  el.querySelector('#header-logout')?.addEventListener('click', async () => {
+    await signOut()
+    // onAuthChange in main.ts will clear state and navigate to landing
   })
 }
 

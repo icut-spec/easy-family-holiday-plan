@@ -1,5 +1,7 @@
 import { getState, setState } from '../store'
 import { navigate } from '../router'
+import { signOut } from '../lib/auth'
+import { onSyncStatus } from '../lib/sync'
 import type { TripRecord } from '../types'
 
 export function mount(el: HTMLElement): void {
@@ -16,7 +18,8 @@ function render(el: HTMLElement): void {
           <span class="page-logo">✈️🐾</span>
           <h1 class="page-header-title">My Trips</h1>
           <div class="page-header-actions">
-            <a href="#landing" class="btn btn--ghost btn--sm" id="header-home">Home</a>
+            <span class="sync-indicator" id="sync-indicator" aria-live="polite"></span>
+            <button class="btn btn--ghost btn--sm" id="header-logout">Log out</button>
           </div>
         </div>
       </header>
@@ -138,6 +141,22 @@ function bindEvents(el: HTMLElement): void {
   el.querySelector('#modal-backdrop')?.addEventListener('click', (e) => {
     if (e.target === e.currentTarget) closeModal(el)
   })
+
+  el.querySelector('#header-logout')?.addEventListener('click', async () => {
+    await signOut()
+    // onAuthChange in main.ts will clear state and navigate to landing
+  })
+
+  // Sync status indicator
+  const syncEl = el.querySelector<HTMLElement>('#sync-indicator')
+  if (syncEl) {
+    onSyncStatus((status) => {
+      if (status === 'saving') { syncEl.textContent = 'Saving…'; syncEl.className = 'sync-indicator sync-indicator--saving' }
+      else if (status === 'saved') { syncEl.textContent = 'Saved'; syncEl.className = 'sync-indicator sync-indicator--saved' }
+      else if (status === 'error') { syncEl.textContent = 'Sync error'; syncEl.className = 'sync-indicator sync-indicator--error' }
+      else { syncEl.textContent = ''; syncEl.className = 'sync-indicator' }
+    })
+  }
 
   el.querySelector('#header-home')?.addEventListener('click', (e) => {
     e.preventDefault()
