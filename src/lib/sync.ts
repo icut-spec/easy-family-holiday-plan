@@ -155,9 +155,9 @@ export async function syncTripToDB(trip: TripRecord, userId: string): Promise<vo
 
 // ─── Delete a trip from DB ───────────────────────────────────────────────────
 
-export async function deleteTripFromDB(tripId: string): Promise<void> {
+export async function deleteTripFromDB(tripId: string, userId: string): Promise<void> {
   if (!db) return
-  await db.from('trips').delete().eq('id', tripId)
+  await db.from('trips').delete().eq('id', tripId).eq('user_id', userId)
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────

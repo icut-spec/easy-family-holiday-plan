@@ -66,3 +66,9 @@ export function setState(partial: Partial<AppState>): void {
   _state = { ..._state, ...partial }
   saveState(_state)
 }
+
+/** Remove all persisted state from localStorage and reset in-memory state to defaults. */
+export function clearState(): void {
+  ;(globalThis.localStorage ?? localStorage).removeItem(STORAGE_KEY)
+  _state = { ...defaultState, trip: { ...defaultTrip } }
+}

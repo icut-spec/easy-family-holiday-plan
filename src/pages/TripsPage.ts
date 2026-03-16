@@ -1,7 +1,8 @@
 import { getState, setState } from '../store'
 import { navigate } from '../router'
 import { signOut } from '../lib/auth'
-import { onSyncStatus } from '../lib/sync'
+import { onSyncStatus, deleteTripFromDB } from '../lib/sync'
+import { getUser } from '../lib/auth'
 import type { TripRecord } from '../types'
 
 export function mount(el: HTMLElement): void {
@@ -353,6 +354,10 @@ function bindEvents(el: HTMLElement): void {
       const trips = state.trips.filter((t) => t.id !== id)
       const currentTripId = state.currentTripId === id ? null : state.currentTripId
       setState({ trips, currentTripId })
+      // Also delete from DB if user is logged in
+      getUser().then((user) => {
+        if (user) deleteTripFromDB(id, user.id)
+      })
       render(el)
     }
   })

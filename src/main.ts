@@ -1,11 +1,11 @@
-import { loadState, setState, onStateChange } from './store'
+import { loadState, clearState, onStateChange } from './store'
 import { onRouteChange, currentRoute, navigate } from './router'
 import type { Route } from './router'
 import { mount as mountLanding } from './pages/LandingPage'
 import { mount as mountAuth } from './pages/AuthPage'
 import { mount as mountTrips } from './pages/TripsPage'
 import { mount as mountTripPage } from './pages/TripPage'
-import { onAuthChange, getSession, getUser } from './lib/auth'
+import { onAuthChange, getUser } from './lib/auth'
 import { loadTripsFromDB, syncTripToDB } from './lib/sync'
 
 // Boot: load persisted state from localStorage
@@ -18,8 +18,8 @@ const appEl = document.getElementById('app') as HTMLElement
 const PROTECTED: Route['name'][] = ['trips', 'trip']
 
 async function isAuthenticated(): Promise<boolean> {
-  const session = await getSession()
-  return session !== null
+  const user = await getUser()
+  return user !== null
 }
 
 // ─── Renderer ────────────────────────────────────────────────────────────────
@@ -67,8 +67,8 @@ onAuthChange(async (user) => {
     await loadTripsFromDB(user.id)
     render(currentRoute())
   } else {
-    // Signed out: clear trips from state and go to landing
-    setState({ trips: [], currentTripId: null })
+    // Signed out: wipe all persisted state and go to landing
+    clearState()
     navigate('landing')
   }
 })
